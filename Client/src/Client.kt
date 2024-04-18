@@ -2,6 +2,7 @@ import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import java.net.InetSocketAddress
+import java.nio.ByteBuffer
 import java.nio.channels.AsynchronousSocketChannel
 import kotlin.coroutines.suspendCoroutine
 
@@ -17,7 +18,11 @@ class Client(val host: String = "localhost", val port: Int = 5106) {
             suspendCoroutine<Void> {
                 socket.connect(InetSocketAddress(host, port), null, ActionCompletionHandler(it))
             }
-            val buf = "Привет!!!!".toByteBuffer()
+            val ba = "При!вет!!!!".toByteArray()
+            val buf = ByteBuffer.allocate(ba.size+4)
+            buf.putInt(ba.size)
+            buf.put(ba)
+            buf.flip()
             val wrote = suspendCoroutine {
                 socket.write(buf, null, ActionCompletionHandler(it))
             }
